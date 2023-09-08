@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-let functionId = "3EK6nRfgJFYkBEwGmayIjQxa9ZKLf_YU5xJYUjOL2fk" // replace with your function id
+let functionId = "gK-A95gyEVdvb6PYp41ertOeId2PvNG5Zlvu0VtBFOQ" // replace with your function id
 
 export const GET = async (_request: NextRequest) => {
   try {
@@ -42,7 +42,7 @@ export const GET = async (_request: NextRequest) => {
   }
 };
 
-export const POST = async (req: Request) => {
+export const POST = async (req: NextRequest) => {
   try {
     const response = await fetch("https://api.mem.tech/api/transactions", {
       method: "POST",
@@ -52,7 +52,7 @@ export const POST = async (req: Request) => {
       },
       body: JSON.stringify({
         functionId: functionId,
-        input: [{ function: "increment" }]
+        inputs: [{ "input": { "function": "increment" } }]
       }),
     });
 
