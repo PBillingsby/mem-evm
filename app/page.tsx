@@ -10,11 +10,14 @@ function Home() {
 
   useEffect(() => {
     readState();
-  }, []);
+  }, [count]);
 
-  const incrementState = async () => {
+  const handleState = async (fn: string) => {
     const response = await fetch("/api", {
       method: "POST",
+      body: JSON.stringify({
+        function: fn
+      })
     });
 
     if (response.ok) {
@@ -29,9 +32,10 @@ function Home() {
         <img src="./mem-logo-v2.svg" alt="mem" width="50" height="50" />
         <h1 className="text-2xl">MEM</h1>
       </span>
-      <div className="flex flex-col items-center text-black">
+      <div className="flex flex-col items-center text-black gap-2">
         Count: {count}
-        <button type="button" className="btn btn-blue outline rounded-sm px-2" onClick={incrementState}>Increment</button>
+        <button type="button" className="btn btn-blue outline rounded-sm px-2" onClick={() => handleState("increment")}>Increment</button>
+        <button type="button" className="btn btn-blue outline rounded-sm px-2" onClick={() => handleState("decrement")}>Decrement</button>
       </div>
     </div>
   )

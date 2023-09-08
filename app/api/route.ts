@@ -43,6 +43,8 @@ export const GET = async (_request: NextRequest) => {
 };
 
 export const POST = async (req: NextRequest) => {
+  const body = await req.json();
+
   try {
     const response = await fetch("https://api.mem.tech/api/transactions", {
       method: "POST",
@@ -52,7 +54,7 @@ export const POST = async (req: NextRequest) => {
       },
       body: JSON.stringify({
         functionId: functionId,
-        inputs: [{ "input": { "function": "increment" } }]
+        inputs: [{ "input": body }]
       }),
     });
 
