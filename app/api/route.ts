@@ -1,8 +1,9 @@
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
-let functionId = "l8yPlmn7wcz_ZaFMACAbX0FCpARYLPEg1tmir8cyE-o" // replace with your function id
+let functionId = "mF9UkwpqDma-lHOXFqZuNw7-mS9-AzljTz7W5HqbSB8" // replace with your function id
 
 export const GET = async (_request: NextRequest) => {
+  console.log("1111111")
   try {
     const response = await axios.get(
       `https://api.mem.tech/api/state/${functionId}`, {
@@ -10,18 +11,17 @@ export const GET = async (_request: NextRequest) => {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': 'http://localhost:3000'
       }
-    }
-    );
+    });
 
+    console.log(response.data)
     if (response.status !== 200) {
       throw new Error(`Request failed with status ${response.status}`);
     }
 
     try {
-      const data = await response;
       return NextResponse.json(
         {
-          data: data,
+          data: response.data,
         },
         {
           status: 200,
@@ -51,7 +51,7 @@ export const POST = async (req: NextRequest) => {
       "https://api.mem.tech/api/transactions",
       JSON.stringify({
         functionId: functionId,
-        inputs: [{ "input": body }]
+        inputs: [body]
       }),
       {
         headers: {
@@ -61,6 +61,7 @@ export const POST = async (req: NextRequest) => {
       }
     );
 
+    console.log("--------", response.data.data)
     if (!response.data.ok) {
       throw new Error(`Request failed with status ${response.status}`);
     }
@@ -77,7 +78,6 @@ export const POST = async (req: NextRequest) => {
       }
     );
   } catch (err) {
-    console.log("!!!!!!!", err)
     return NextResponse.json(
       {
         error: err, // Use err.message to get the error message

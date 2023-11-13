@@ -17,7 +17,18 @@ interface Register {
 
 function Home() {
   const [name, setName] = useState<string>();
-  const [register, setRegister] = useState<Register>()
+  const [register, setRegister] = useState<Register>();
+  const [users, setUsers] = useState<any[]>([]);
+
+  console.log(users)
+  useEffect(() => {
+    fetchUsers();
+  }, [])
+
+  const fetchUsers = async () => {
+    const users = await axios.get("https://api.mem.tech/api/state/mF9UkwpqDma-lHOXFqZuNw7-mS9-AzljTz7W5HqbSB8")
+    setUsers(users.data.names);
+  }
 
   const sendToMEM = async () => {
     try {
@@ -33,21 +44,17 @@ function Home() {
       }
     } catch (error) {
       console.error("An error occurred:", error);
-      // Handle unexpected errors
     }
   };
 
   const connect = async () => {
     if (typeof window != "undefined" && typeof window.ethereum != "undefined") {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = await provider.getSigner();
-      await provider.send('eth_requestAccounts', []);
+      const accounts = await provider.send('eth_requestAccounts', []);
 
-      let message = "Sign to Register";
+      const signer = provider.getSigner();
 
-      // const utf8Encoder = new TextEncoder();
-
-      // const encodedMessage = utf8Encoder.encode(message).toString();
+      let message = "hello world";
 
       const address = await signer.getAddress();
 
@@ -56,7 +63,6 @@ function Home() {
         params: [message, address],
       });
 
-      console.log(signature)
 
       setRegister({
         address: address,
@@ -81,6 +87,14 @@ function Home() {
           </>
         }
       </span>
+      <div className="pt-8 flex gap-4 w-auto">
+        {users && Object.entries(users).map(([address, name], index) => (
+          <div key={index} className="border border-white p-2">
+            <span className="text-white">Name: {name}</span>
+            <span className="text-white text-center">{address}</span>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
