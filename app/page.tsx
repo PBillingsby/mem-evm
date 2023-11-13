@@ -45,25 +45,19 @@ function Home() {
 
       let message = "Sign to Register";
 
-      // Create a TextEncoder instance
-      const utf8Encoder = new TextEncoder();
+      // const utf8Encoder = new TextEncoder();
 
-      // Convert message to string explicitly
-      const encodedMessage = utf8Encoder.encode(message).toString();
+      // const encodedMessage = utf8Encoder.encode(message).toString();
 
       const address = await signer.getAddress();
-      console.log(
-        encodedMessage,
-      )
 
       const signature = await window.ethereum.request({
         method: 'personal_sign',
-        params: [encodedMessage, address],
+        params: [message, address],
       });
 
       console.log(signature)
 
-      debugger
       setRegister({
         address: address,
         signature: signature,
