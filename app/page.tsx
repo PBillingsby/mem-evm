@@ -39,20 +39,34 @@ function Home() {
 
   const connect = async () => {
     if (typeof window != "undefined" && typeof window.ethereum != "undefined") {
-      const provider: any = new providers.Web3Provider(window.ethereum);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = await provider.getSigner();
-      const message = "Sign to register"
+      await provider.send('eth_requestAccounts', []);
+
+      let message = "Sign to Register";
+
+      // Create a TextEncoder instance
+      const utf8Encoder = new TextEncoder();
+
+      // Convert message to string explicitly
+      const encodedMessage = utf8Encoder.encode(message).toString();
 
       const address = await signer.getAddress();
+      console.log(
+        encodedMessage,
+      )
 
       const signature = await window.ethereum.request({
         method: 'personal_sign',
-        params: [message, address],
+        params: [encodedMessage, address],
       });
 
+      console.log(signature)
+
+      debugger
       setRegister({
         address: address,
-        signature: Buffer.from(signature).toString("base64"),
+        signature: signature,
       });
     }
 
