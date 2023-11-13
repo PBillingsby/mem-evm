@@ -1,7 +1,6 @@
 {
-  "count": 0,
-  "publicFunctions": {
-    "increment": [],
-    "decrement": []
-  }
+  "names": {},
+  "signatures": [],
+  "verification_message": "hello world",
+  "evm_molecule_endpoint": "http://evm.molecule.sh"
 }

@@ -1,36 +1,37 @@
+import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
-let functionId = "gK-A95gyEVdvb6PYp41ertOeId2PvNG5Zlvu0VtBFOQ" // replace with your function id
+let functionId = "l8yPlmn7wcz_ZaFMACAbX0FCpARYLPEg1tmir8cyE-o" // replace with your function id
 
 export const GET = async (_request: NextRequest) => {
   try {
-    const response = await fetch(`https://api.mem.tech/api/state/${functionId}`, {
-      method: "GET",
+    const response = await axios.get(
+      `https://api.mem.tech/api/state/${functionId}`, {
       headers: {
         'Content-Type': 'application/json',
-      },
-    });
+        'Access-Control-Allow-Origin': 'http://localhost:3000'
+      }
+    }
+    );
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`Request failed with status ${response.status}`);
     }
 
-    const responseText = await response.text();
-    let result = null;
-
-    if (responseText) {
-      result = JSON.parse(responseText);
+    try {
+      const data = await response;
+      return NextResponse.json(
+        {
+          data: data,
+        },
+        {
+          status: 200,
+        }
+      );
+    } catch (error: any) {
+      throw new Error(`Failed to parse JSON: ${error.message}`);
     }
-
-    return NextResponse.json(
-      {
-        data: result,
-      },
-      {
-        status: 200,
-      }
-    );
   } catch (err) {
-    console.error(err);
+    console.error("!!!!", err);
     return NextResponse.json(
       {
         error: err,
@@ -43,26 +44,29 @@ export const GET = async (_request: NextRequest) => {
 };
 
 export const POST = async (req: NextRequest) => {
-  const body = await req.json();
-
   try {
-    const response = await fetch("https://api.mem.tech/api/transactions", {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      },
-      body: JSON.stringify({
+    const body = await req.json();
+
+    const response = await axios.post(
+      "https://api.mem.tech/api/transactions",
+      JSON.stringify({
         functionId: functionId,
         inputs: [{ "input": body }]
       }),
-    });
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      }
+    );
 
-    if (!response.ok) {
+    if (!response.data.ok) {
       throw new Error(`Request failed with status ${response.status}`);
     }
 
-    const result = await response.json();
+    // Assuming response.data is an object that can be parsed as JSON
+    const result = response.data;
 
     return NextResponse.json(
       {
@@ -73,10 +77,10 @@ export const POST = async (req: NextRequest) => {
       }
     );
   } catch (err) {
-    console.error(err);
+    console.log("!!!!!!!", err)
     return NextResponse.json(
       {
-        error: err,
+        error: err, // Use err.message to get the error message
       },
       {
         status: 500,

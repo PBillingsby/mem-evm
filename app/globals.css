@@ -18,13 +18,10 @@
 
 body {
   color: rgb(var(--foreground-rgb));
+  background-color: black;
 }
 
 span {
   align-items: center;
   display: flex;
-}
-
-h1 {
-  color: #453d46;
 }

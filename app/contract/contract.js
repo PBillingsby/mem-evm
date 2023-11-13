@@ -1,15 +1,40 @@
-// Check the README for instructions on testing and deploying MEM contracts.
-// Full docs at docs.mem.tech
-
 export async function handle(state, action) {
   const input = action.input;
 
-  if (input.function === "increment") {
-    state.count += 1;
+  const names = state.names;
+  const signatures = state.signatures;
+  const verification_message = state.verification_message;
+  const evm_molecule_endpoint = state.evm_molecule_endpoint;
+
+  if (input.function === "register") {
+    const name = input.name;
+    const caller = input.caller;
+    const signature = input.signature;
+
+    ContractAssert(name.trim().length, "error invalid name");
+    ContractAssert(!(name in names), "name already registered");
+    ContractAssert(caller && signature, "missing required arguments");
+    ContractAssert(
+      !signatures.includes(signature),
+      "error signed message used"
+    );
+
+    const message = btoa(verification_message);
+    await _moleculeSignatureVerification(caller, message, signature);
+    state.names[caller] = name.trim();
+    signatures.push(signature);
+
     return { state };
   }
-  if (input.function === "decrement") {
-    state.count -= 1;
-    return { state };
+
+  async function _moleculeSignatureVerification(caller, message, signature) {
+    try {
+      const isValid = await EXM.deterministicFetch(
+        `${evm_molecule_endpoint}/signer/${caller}/${message}/${signature}`
+      );
+      ContractAssert(isValid.asJSON()?.result, "unauthorized caller");
+    } catch (error) {
+      throw new ContractError("molecule res error");
+    }
   }
 }
