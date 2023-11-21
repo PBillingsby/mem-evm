@@ -3,7 +3,6 @@ export async function handle(state, action) {
 
   const names = state.names;
   const signatures = state.signatures;
-  const verification_message = state.verification_message;
   const evm_molecule_endpoint = state.evm_molecule_endpoint;
 
   if (input.function === "register") {
@@ -34,7 +33,7 @@ export async function handle(state, action) {
       );
       ContractAssert(isValid.asJSON()?.result, "unauthorized caller");
     } catch (error) {
-      throw new ContractError("molecule res error");
+      throw new ContractError("molecule res error", error);
     }
   }
 }
