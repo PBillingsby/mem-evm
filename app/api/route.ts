@@ -6,7 +6,7 @@ export const POST = async (req: NextRequest) => {
     const body: Promise<NextRequest> = await req.json();
 
     const options: object = {
-      input: body,
+      input: JSON.stringify(body),
       function_id: functionId
     }
 

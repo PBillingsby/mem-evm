@@ -18,7 +18,8 @@ function Home() {
   const [name, setName] = useState<string>();
   const [registry, setRegistry] = useState<Register>();
   const [loading, setLoading] = useState<boolean>(false);
-  const [users, setUsers] = useState<object>([]);
+  const [users, setUsers] = useState<object[]>([]);
+  const [error, setError] = useState<any>();
 
   useEffect(() => {
     fetchUsers();
@@ -26,7 +27,6 @@ function Home() {
 
   const fetchUsers = async () => {
     const users: AxiosResponse = await axios.get(`https://mem-testnet.xyz/state/${process.env.NEXT_PUBLIC_FUNCTION_ID}`)
-    console.log(users)
     setUsers(users.data.names);
   }
 
@@ -42,17 +42,21 @@ function Home() {
             caller: registry.address
           }));
 
-          if (response.data.ok) {
+          if (response.status === 200) {
             setLoading(false);
             fetchUsers();
           }
         } catch (err) {
-          console.log(err)
+          setError(err)
+          setLoading(false)
         }
       }
     } catch (error) {
+      setError(error)
+      setLoading(false)
       console.error("An error occurred:", error);
     }
+    setRegistry(undefined);
   };
 
   const connect = async () => {
@@ -77,8 +81,6 @@ function Home() {
         signature: signature,
       });
     }
-
-    sendToMEM();
   }
 
   return (
@@ -92,12 +94,13 @@ function Home() {
               <input
                 type="text"
                 id="name"
+                autoComplete="off"
                 placeholder="Name"
                 className="text-black"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
               />
               <button type="button" className="btn btn-blue outline rounded-sm px-2" onClick={() => sendToMEM()}>
-                Send To MEM Contract
+                Send To MEM Function
               </button>
             </div>
           )
@@ -107,6 +110,8 @@ function Home() {
           </button>
         )}
       </span>
+      {error && !registry && <p className="text-center">Error has occured - {error.code}</p>}
+
       <div className="pt-8 flex gap-4 w-auto justify-between">
         {users && Object.entries(users).map(([address, name], index) => (
           <div key={index} className="border border-white p-2">
@@ -115,7 +120,7 @@ function Home() {
           </div>
         ))}
       </div>
-    </div >
+    </div>
   )
 }
 
